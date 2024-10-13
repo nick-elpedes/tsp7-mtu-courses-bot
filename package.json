@@ -1,0 +1,18 @@
+{
+  "name": "tsp7-mtu-courses-bot",
+  "version": "1.0.0",
+  "description": "Discord bot to interface with MTU Courses",
+  "main": "start.js",
+  "module": "es6",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node start.js",
+    "refresh-commands": "node refresh-commands.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  }
+}
