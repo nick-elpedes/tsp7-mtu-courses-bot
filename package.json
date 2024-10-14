@@ -2,12 +2,11 @@
   "name": "tsp7-mtu-courses-bot",
   "version": "1.0.0",
   "description": "Discord bot to interface with MTU Courses",
-  "main": "start.js",
-  "module": "es6",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node start.js",
-    "refresh-commands": "node refresh-commands.js"
+    "register-commands": "node register-commands.js"
   },
   "author": "",
   "license": "ISC",
