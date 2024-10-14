@@ -1,0 +1,33 @@
+@startuml
+Actor User as usr
+
+Participant Bot as bot
+Participant API as api
+
+usr -> bot: Get Class Information
+activate bot
+bot -> api: Fetch Class Information
+activate api
+api -> bot: Return Info
+deactivate api
+bot -> usr: Display Class Information
+deactivate bot
+
+usr -> bot: Get Class Sections
+activate bot
+bot -> api: Fetch Class Sections
+activate api
+api -> bot: Return Info
+deactivate api
+bot -> usr: Display Class Sections
+deactivate bot
+
+usr -> bot: Get Class Statistics
+activate bot
+bot -> api: Fetch Class Pass and Fail
+activate api
+api -> bot: Return Info
+deactivate api
+bot -> usr: Display Class Statistics
+deactivate bot
+@enduml
