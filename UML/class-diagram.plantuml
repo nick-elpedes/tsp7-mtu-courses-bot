@@ -70,9 +70,6 @@ Class RDate {
 }
 Class RRule {
   + type: string,
-  + config: RRuleConfig
-}
-Class RRuleConfig {
   + end: Time,
   + start: Time,
   + duration: int,
@@ -89,4 +86,9 @@ Class Time {
   + timezone: string,
   + millisecond: int
 }
+Section *-- Class
+Section *-- Schedule
+Schedule *-- RDate
+RDate *-- RRule
+RRule *-- Time
 @enduml
