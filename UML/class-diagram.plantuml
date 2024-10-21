@@ -1,6 +1,92 @@
 @startuml
-Class Bot {
-  - BuildEmbed()
+Class Building {
+  + lat: double
+  + lon: double
+  + name: string
+  + shortName: string
 }
+Class Class {
+  + id: string,
+  + year: int,
+  + semester: string,
+  + subject: string,
+  + crse: int,
+  + title: string,
+  + description: string,
+  + updatedAt: string,
+  + deletedAt: string,
+  + prereqs: string,
+  + offered: string[],
+  + minCredits: int,
+  + maxCredits: int
+}
+Class Instructor {
+  + id: int,
+  + email: string,
+  + phone: string,
+  + rmpId: string,
+  + office: string,
+  + fullName: string,
+  + deletedAt: DateTime,
+  + interests: string[],
+  + updatedAt: DateTime,
+  + numRatings: int,
+  + websiteURL: string,
+  + departments: string[],
+  + occupations: string[],
+  + averageRating: double,
+  + thumbnailURL: string
+}
+Class Section {
+  + id: string,
+  + cmp: int,
+  + crn: int,
+  + fee: int,
+  + room: string,
+  + time: Schedule
+  + course: Class,
+  + section: string,
+  + courseId: string,
+  + deletedAt: DateTime,
+  + updatedAt: DateTime,
+  + maxCredits: int,
+  + minCredits: int,
+  + takenSeats: int,
+  + totalSeats: int,
+  + instructors: Instructor[],
+  + buildingName: string,
+  + locationType: string,
+  + availableSeats: int
 
+}
+Class Schedule {
+  + type: string,
+  + rdates: RDate,
+  + timezone: string
+}
+Class RDate {
+  + type: string,
+  + rrules: RRule[],
+}
+Class RRule {
+  + type: string,
+  + config: RRuleConfig
+}
+Class RRuleConfig {
+  + end: Time,
+  + start: Time,
+  + duration: int,
+  + frequency: string,
+  + byDayOfWeek: string[]
+}
+Class Time {
+  + day: int,
+  + hour: int,
+  + year: int,
+  + month: int,
+  + minute: int,
+  + second: int,
+  + timezone: string,
+  + millisecond: int
+}
 @enduml
