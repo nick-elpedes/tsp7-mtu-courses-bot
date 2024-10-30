@@ -53,3 +53,77 @@ export function buildSemestersEmbed(json) {
     })
     .setTimestamp();
 }
+
+/**
+ * Builds an embed for a course object from /courses or /courses/first
+ * @param {Object} json - The JSON response from the API
+ * @returns {EmbedBuilder} - The completed embed
+ */
+export function buildCourseEmbed(json) {
+  // make sure that the object provided is actually json
+  if (!json || typeof json !== "object") {
+    return { completed: false, error: "Invalid JSON object" };
+  }
+
+  let formatOffer = "";
+  let offered = json.offered;
+  for (var whence of offered) {
+    formatOffer += whence + ", "
+  }
+  formatOffer = formatOffer.substring(0, formatOffer.length - 2); // cut off the extra ", " i added
+
+  let formatCredits = "" + json.minCredits;
+  if (json.minCredits != json.maxCredits) {
+    formatCredits += ` - ${json.maxCredits}`;
+  }
+
+  return new EmbedBuilder()
+    .setAuthor({
+      name: `${json.subject} ${json.crse}`,
+    })
+    .setTitle(`${json.title}`)
+    .setDescription(`${json.description}`)
+    .addFields(
+      {
+        name: "Offered",
+        value: formatOffer,
+        inline: false
+      },
+      {
+        name: "Credits",
+        value: formatCredits,
+        inline: false
+      },
+      {
+        name: "Pre-Requisites",
+        value: json.prereqs,
+        inline: false
+      }
+    )
+    .setColor("#ffea00")
+    .setFooter({
+      text: "Retrieved from MTU Courses",
+    })
+    .setTimestamp();
+}
+
+/**
+ * Builds an embed for a course object from /courses or /courses/first
+ * @param {Object} json - The JSON response from the API
+ * @returns {EmbedBuilder} - The completed embed
+ */
+export function buildSectionEmbed(json) {
+  // make sure that the object provided is actually json
+  if (!json || typeof json !== "object") {
+    return { completed: false, error: "Invalid JSON object" };
+  }
+
+  return new EmbedBuilder()
+    .setTitle(`nyi`)
+    .setDescription(`nyi`)
+    .setColor("#ffea00")
+    .setFooter({
+      text: "Retrieved from MTU Courses",
+    })
+    .setTimestamp();
+}
