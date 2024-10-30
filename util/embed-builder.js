@@ -27,8 +27,7 @@ export function buildSemestersEmbed(json) {
     seasons[season].sort();
   }
 
-  // create the embed
-  return new EmbedBuilder()
+    return embed = new EmbedBuilder()
     .setTitle("Available Semesters")
     .addFields(
       {
@@ -51,5 +50,25 @@ export function buildSemestersEmbed(json) {
     .setFooter({
       text: "Retrieved from MTU Courses",
     })
-    .setTimestamp();
+    .setTimestamp();   
+}
+
+export function buildBuildingsEmbed(json) {
+    // make sure that the object provided is actually json
+    if (!json || typeof json !== "object") {
+        return { completed: false, error: "Invalid JSON object" };
+    }
+   
+    
+    
+   
+    
+    return embed = new EmbedBuilder()
+    .addFields(
+    {
+      name: `${name} (${shorthand})`,
+      value: `Lat: ${latitude},Long: ${longitude}`,
+      inline: false
+    },
+  );
 }
