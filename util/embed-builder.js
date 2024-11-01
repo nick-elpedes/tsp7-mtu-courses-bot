@@ -53,24 +53,35 @@ export function buildSemestersEmbed(json) {
     .setTimestamp();   
 }
 
+
 export function buildBuildingsEmbed(json) {
     // make sure that the object provided is actually json
     if (!json || typeof json !== "object") {
         return { completed: false, error: "Invalid JSON object" };
     }
-   
+    console.log(json);
     
+    const embed = new EmbedBuilder()
+    .setTitle(`Buildings`);
+
+    for(const building of json) {
+        embed.addFields(
+            {
+            name: `${building.name} (${building.shortName})`,
+            value: `Lat: ${building.lat}, Long: ${building.lon}`,
+            inline: false
+            }
+        );
+    }
+
+    embed
+    .setColor("#ffea00")
+    .setFooter({
+      text: "Retrieved from MTU Courses",
+    })
+    .setTimestamp(); 
     
-   
-    
-    return embed = new EmbedBuilder()
-    .addFields(
-    {
-      name: `${name} (${shorthand})`,
-      value: `Lat: ${latitude},Long: ${longitude}`,
-      inline: false
-    },
-  );
+    return embed;
 }
 
 /**
