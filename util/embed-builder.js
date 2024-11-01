@@ -119,8 +119,14 @@ export function buildSectionEmbed(json) {
   }
 
   return new EmbedBuilder()
-    .setTitle(`nyi`)
+    .setAuthor(`${json.course.subject} ${json.course.crse}: ${json.section}`)
+    .setTitle(`${json.course.title}`)
     .setDescription(`nyi`)
+    .setFields(
+      {
+        
+      }
+    )
     .setColor("#ffea00")
     .setFooter({
       text: "Retrieved from MTU Courses",
