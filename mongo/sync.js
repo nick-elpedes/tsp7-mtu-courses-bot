@@ -47,7 +47,7 @@ export async function syncCourses() {
 
 /** sync sections */
 export async function syncSections() {
-  const uri = process.env.MONGO_URI;
+  const uri = process.env.MONGO_URI; //todo fix this
   const client = new MongoClient("mongodb://localhost:27017");
 
   try {
@@ -78,6 +78,68 @@ export async function syncSections() {
   }
 }
 
+export async function aggrtegateSections() {
+  const uri = process.env.MONGO_URI; // todo fix
+  const client = new MongoClient("mongodb://localhost:27017");
+
+  try {
+    await client.connect();
+
+    const database = client.db("tsp7_mtu_courses_discord_db");
+    const courses = database.collection("courses");
+    const sections = database.collection("sections");
+
+    // drop the course_sections collection
+    await database.dropCollection("course_sections");
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "sections",
+          localField: "id",
+          foreignField: "courseId",
+          as: "sections",
+        },
+      },
+    ];
+
+    const courseSections = await courses.aggregate(pipeline).toArray();
+
+    // insert the course_sections collection
+    await database.collection("course_sections").insertMany(courseSections);
+    console.log("Recreated course_sections collection");
+  } finally {
+    await client.close();
+  }
+}
+
+/**
+ * Update the last accessed document in the metadata collection
+ */
+export async function updateLastAccessed() {
+  const uri = process.env.MONGO_URI; // todo fix
+  const client = new MongoClient("mongodb://localhost:27017");
+
+  try {
+    await client.connect();
+
+    const database = client.db("tsp7_mtu_courses_discord_db");
+    const metadata = database.collection("metadata");
+
+    const now = new Date();
+    await metadata.updateOne(
+      { name: "lastAccessed" },
+      { $set: { value: now } },
+      { upsert: true }
+    );
+    console.log("Updated last accessed time");
+  } finally {
+    await client.close();
+  }
+}
+
 // Run the sync function
 await syncCourses();
 await syncSections();
+await updateLastAccessed();
+await aggrtegateSections();
