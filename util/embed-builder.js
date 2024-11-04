@@ -119,8 +119,8 @@ export function buildSectionEmbed(json) {
   }
 
   var days = "";
-  if (json.time.rrules != null && json.time.rrules.length > 0 && json.time.rrules[0].config.byDayofWeek != null && json.time.rrules[0].config.byDayofWeek.length > 0) {
-    for (var whence of json.time.rrules[0].config.byDayofWeek) {
+  if (json.time.rrules != null && json.time.rrules.length > 0 && json.time.rrules[0].config.byDayOfWeek != null && json.time.rrules[0].config.byDayOfWeek.length > 0) {
+    for (var whence of json.time.rrules[0].config.byDayOfWeek) {
       switch (whence) {
         case "MO":
           days += "Monday";
@@ -138,12 +138,19 @@ export function buildSectionEmbed(json) {
           days += "Friday";
           break;
         default:
+          days += "?"
           break;
       }
       days += ", ";
     }
   }
-  days = days.substring(0, days.length - 2);
+
+  // Finish formatting days
+  if (days == "") {
+    days = "None"
+  } else {
+    days = days.substring(0, days.length - 2);
+  }
 
   return new EmbedBuilder()
     .setAuthor(
@@ -152,7 +159,7 @@ export function buildSectionEmbed(json) {
       }
     )
     .setTitle(`${json.course.title}`)
-    .setDescription(`nyi`)
+    .setDescription(`${json.course.description}`)
     .setFields(
       {
         name: "Days",
