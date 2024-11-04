@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import { buildSemestersEmbed, buildCourseEmbed } from "./util/embed-builder.js";
+import { buildSemestersEmbed, buildCourseEmbed, buildSectionEmbed } from "./util/embed-builder.js";
 import dotenv from "dotenv";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -47,6 +47,12 @@ client.on("interactionCreate", async (interaction) => {
     await interaction.editReply({ embeds: [embed]});
   } else if (interaction.commandName === "testsectionsfirst") {
     await interaction.deferReply();
+
+    
+    // Get arguments
+    let crn = interaction.options.getString("coursenum") ?? "";
+    let year = interaction.options.getString("year") ?? "";
+    let semester = interaction.options.getString("semester") ?? "";
 
     // Format arguments into API readable format
     let args = "";              // op between API args     // arg
