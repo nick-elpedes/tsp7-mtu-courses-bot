@@ -5,17 +5,7 @@ Package Bot {
   usecase "View Class Sections" as vcs
   usecase "View Class Statistics" as vct
 }
-Package API {
-  usecase "Get Classes" as gcl
-  usecase "Get Class Sections" as gcs
-  usecase "Get Class Details" as gcd
-}
-
 usr -- vcl
 usr -- vcs
 usr -- vct
-
-vcl -- gcl
-vcs -- gcs
-vct -- gcd
 @enduml
