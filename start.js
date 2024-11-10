@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import { buildSemestersEmbed, buildCourseEmbed } from "./util/embed-builder.js";
+import { buildSemestersEmbed, buildCourseEmbed, buildSectionEmbed } from "./util/embed-builder.js";
 import dotenv from "dotenv";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -15,9 +15,12 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "ping") {
     await interaction.reply("Pong!");
   } else if (interaction.commandName === "test") {
-    const semesters = await fetch("https://api.michigantechcourses.com/semesters", {
-      method: "GET",
-    });
+    const semesters = await fetch(
+      "https://api.michigantechcourses.com/semesters",
+      {
+        method: "GET",
+      }
+    );
     const embed = buildSemestersEmbed(await semesters.json());
 
     await interaction.reply({ embeds: [embed] });
@@ -30,39 +33,51 @@ client.on("interactionCreate", async (interaction) => {
     let subject = interaction.options.getString("subject") ?? "";
 
     // Format arguments into API readable format
-    let args = "";              // op between API args     // arg
-    if (year != "")     args += (args == "" ? "?" : "&") + (`year=${year}`);
-    if (semester != "") args += (args == "" ? "?" : "&") + (`semester=${semester}`);
-    if (course != "")   args += (args == "" ? "?" : "&") + (`crse=${course}`);
-    if (subject != "")  args += (args == "" ? "?" : "&") + (`subject=${subject}`);
+    let args = ""; // op between API args     // arg
+    if (year != "") args += (args == "" ? "?" : "&") + `year=${year}`;
+    if (semester != "")
+      args += (args == "" ? "?" : "&") + `semester=${semester}`;
+    if (course != "") args += (args == "" ? "?" : "&") + `crse=${course}`;
+    if (subject != "") args += (args == "" ? "?" : "&") + `subject=${subject}`;
 
     // Get API data and turn it into an embed
-    const courseData = await fetch(`https://api.michigantechcourses.com/courses/first${args}`, {
-      method: "GET"
-    });
+    const courseData = await fetch(
+      `https://api.michigantechcourses.com/courses/first${args}`,
+      {
+        method: "GET",
+      }
+    );
     const data = await courseData.json();
     const embed = buildCourseEmbed(data);
 
     // Display embed
-    await interaction.editReply({ embeds: [embed]});
+    await interaction.editReply({ embeds: [embed] });
   } else if (interaction.commandName === "testsectionsfirst") {
     await interaction.deferReply();
 
+    let year = interaction.options.getString("year") ?? "";
+    let semester = interaction.options.getString("semester") ?? "";
+    let crn = interaction.options.getString("coursenum") ?? "";
+
     // Format arguments into API readable format
-    let args = "";              // op between API args     // arg
-    if (crn != "")   args += (args == "" ? "?" : "&") + (`crn=${crn}`);
-    if (year != "")     args += (args == "" ? "?" : "&") + (`year=${year}`);
-    if (semester != "") args += (args == "" ? "?" : "&") + (`semester=${semester}`);
+    let args = ""; // op between API args     // arg
+    if (crn != "") args += (args == "" ? "?" : "&") + `crn=${crn}`;
+    if (year != "") args += (args == "" ? "?" : "&") + `year=${year}`;
+    if (semester != "")
+      args += (args == "" ? "?" : "&") + `semester=${semester}`;
 
     // Get API data and turn it into an embed
-    const sectionData = await fetch(`https://api.michigantechcourses.com/sections/first${args}`, {
-      method: "GET"
-    });
+    const sectionData = await fetch(
+      `https://api.michigantechcourses.com/sections/first${args}`,
+      {
+        method: "GET",
+      }
+    );
     const data = await sectionData.json();
     const embed = buildSectionEmbed(data);
-    
+
     // Display embed
-    await interaction.editReply({ embeds: [embed]});
+    await interaction.editReply({ embeds: [embed] });
   }
 });
 

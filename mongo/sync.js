@@ -65,20 +65,26 @@ export async function syncSections() {
     const sectionJSON = await sectionData.json();
     console.log(`Fetched ${sectionJSON.length} sections from the API`);
 
+    // count var
+    let count = 0;
     for (const section of sectionJSON) {
+      count++;
       await sections.updateOne(
         { id: section.id },
         { $set: section },
         { upsert: true }
       );
+      if (count % 100 == 0) {
+        console.log(`Upserted ${count} sections`);
+      }
     }
-    console.log("Upserted sections");
+    console.log(`Upserted ${count} sections`);
   } finally {
     await client.close();
   }
 }
 
-export async function aggrtegateSections() {
+export async function aggregateSections() {
   const uri = process.env.MONGO_URI; // todo fix
   const client = new MongoClient("mongodb://localhost:27017");
 
@@ -138,8 +144,27 @@ export async function updateLastAccessed() {
   }
 }
 
+export async function createIndexes() {
+  const uri = process.env.MONGO_URI; // todo fix
+  const client = new MongoClient("mongodb://localhost:27017");
+
+  try {
+    await client.connect();
+
+    const database = client.db("tsp7_mtu_courses_discord_db");
+    const courseSections = database.collection("course_sections");
+
+    await courseSections.createIndex({ "sections.availableSeats": 1 });
+    await courseSections.createIndex({ "year": 1, "semester": 1, "subject": 1 });
+    console.log("Created indexes");
+  } finally {
+    await client.close();
+  }
+}
+
 // Run the sync function
 await syncCourses();
 await syncSections();
 await updateLastAccessed();
-await aggrtegateSections();
+await aggregateSections();
+await createIndexes();
