@@ -5,6 +5,9 @@ dotenv.config(".env");
 
 /**
  * Get list of courses by year, semester, and subject.
+ * @param {string|number} year - The year the course is offered.
+ * @param {"SPRING"|"FALL"|"SUMMER"} semester - The semester the course is offered.
+ * @param {string} subject - The subject of the course. (MUST BE UPPERCASE)
  */
 export async function getCourses(year, semester, subject) {
   const uri = process.env.MONGO_URI;
@@ -17,7 +20,7 @@ export async function getCourses(year, semester, subject) {
     const courseSections = database.collection("course_sections");
 
     const courseData = await courseSections
-      .find({ year, semester, subject }, { sort: [["crse", 1]] })
+      .find({ year: parseInt(year), semester, subject }, { sort: [["crse", 1]] })
       .toArray();
     const titles = courseData.map(
       (course) => `${course.subject}${course.crse} - ${course.title}`
@@ -29,7 +32,11 @@ export async function getCourses(year, semester, subject) {
 }
 
 /**
- * Get list of courses by year, semester, and subject.
+ * Get list of sections by year, semester, subject, and course number.
+ * @param {string|number} year - The year the course is offered.
+ * @param {"SPRING"|"FALL"|"SUMMER"} semester - The semester the course is offered.
+ * @param {string} subject - The subject of the course. (MUST BE UPPERCASE)
+ * @param {string} crse - The course number.
  */
 export async function getSections(year, semester, subject, crse) {
   const uri = process.env.MONGO_URI;
@@ -50,13 +57,9 @@ export async function getSections(year, semester, subject, crse) {
     };
     const sectionData = await courseSections
       .findOne({ year: parseInt(year), semester, subject, crse }, { sort: [["crse", 1]] });
-      console.log(typeof sectionData);
     returnData.sectionData = sectionData.sections;
-    console.log(returnData);
     return returnData;
   } finally {
     await client.close();
   }
 }
-
-getSections("2022", "SPRING", "CS", "3141");
