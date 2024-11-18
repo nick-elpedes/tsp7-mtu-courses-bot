@@ -9,8 +9,12 @@ const commands = [
     description: 'Replies with Pong!',
   },
   {
-    name: 'test',
-    description: 'Test command for MTU Courses API',
+    name: 'semesters',
+    description: 'returns what the semesters get returns',
+  },
+  {
+    name: 'buildings',
+    description: 'returns what the buildings get returns',
   },
   new SlashCommandBuilder().setName("testcoursesfirst")
     .setDescription("Test command for MTU Courses API: /courses/first")

@@ -65,20 +65,26 @@ export async function syncSections() {
     const sectionJSON = await sectionData.json();
     console.log(`Fetched ${sectionJSON.length} sections from the API`);
 
+    // count var
+    let count = 0;
     for (const section of sectionJSON) {
+      count++;
       await sections.updateOne(
         { id: section.id },
         { $set: section },
         { upsert: true }
       );
+      if (count % 100 == 0) {
+        console.log(`Upserted ${count} sections`);
+      }
     }
-    console.log("Upserted sections");
+    console.log(`Upserted ${count} sections`);
   } finally {
     await client.close();
   }
 }
 
-export async function aggrtegateSections() {
+export async function aggregateSections() {
   const uri = process.env.MONGO_URI; // todo fix
   const client = new MongoClient("mongodb://localhost:27017");
 
@@ -138,8 +144,63 @@ export async function updateLastAccessed() {
   }
 }
 
+export async function createIndexes() {
+  const uri = process.env.MONGO_URI; // todo fix
+  const client = new MongoClient("mongodb://localhost:27017");
+
+  try {
+    await client.connect();
+
+    const database = client.db("tsp7_mtu_courses_discord_db");
+    const courseSections = database.collection("course_sections");
+
+    await courseSections.createIndex({ "sections.availableSeats": 1 });
+    await courseSections.createIndex({ "year": 1, "semester": 1, "subject": 1 });
+    console.log("Created indexes");
+  } finally {
+    await client.close();
+  }
+}
+
+/* sync sections */
+export async function syncInstructors() {
+    const uri = process.env.MONGO_URI;
+    const client = new MongoClient("mongodb://localhost:27017");
+
+    try{
+        await client.connect();
+
+        const database = client.db("tsp7_mtu_courses_discord_db");
+        const instructors = database.collection("instructors");
+
+        const instructorsData = await fetch(
+            "https://api.michigantechcourses.com/instructors",
+            {
+              method: "GET",
+            }
+          );
+
+          const instructorsJSON = await instructorsData.json();
+          console.log(`Fetched ${instructorsJSON.length} courses from the API`);
+        
+          for (const instructor of instructorsJSON) {
+            await instructors.updateOne(
+              { id: instructor.id },
+              { $set: instructor },
+              { upsert: true }
+            );
+          }
+          console.log("Upserted instructors");
+    } finally {
+        await client.close();
+    }
+}
+
+
 // Run the sync function
 await syncCourses();
 await syncSections();
+await syncInstructors();
 await updateLastAccessed();
-await aggrtegateSections();
+await aggregateSections();
+await createIndexes();
