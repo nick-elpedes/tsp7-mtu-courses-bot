@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import { buildSemestersEmbed, buildCourseEmbed, buildSectionEmbed } from "./util/embed-builder.js";
+import { findCourses } from "./util/db-find.js";
 import dotenv from "dotenv";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -47,7 +48,6 @@ client.on("interactionCreate", async (interaction) => {
     await interaction.editReply({ embeds: [embed]});
   } else if (interaction.commandName === "testsectionsfirst") {
     await interaction.deferReply();
-
     
     // Get arguments
     let crn = interaction.options.getString("coursenum") ?? "";
@@ -69,6 +69,19 @@ client.on("interactionCreate", async (interaction) => {
     
     // Display embed
     await interaction.editReply({ embeds: [embed]});
+  } else if (interaction.commandName == "course") {
+    await interaction.deferReply();
+
+    // Get args
+    let subject = interaction.options.getString("subject") ?? "";
+    let year = interaction.options.getString("year") ?? "";
+    let semester = interaction.options.getString("semester") ?? "";
+    let name = interaction.options.getString("name") ?? "";
+    let num = interaction.options.getString("number") ?? "";
+
+    await findCourses(subject, year, semester, name, num);
+
+    interaction.editReply("done!");
   }
 });
 

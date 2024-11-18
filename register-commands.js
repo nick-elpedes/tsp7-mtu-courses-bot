@@ -38,7 +38,24 @@ const commands = [
     .addStringOption(new SlashCommandStringOption().setName("semester")
       .setDescription("The semester to limit section responses to")
       .setRequired(false))
-  .toJSON()
+  .toJSON(),
+  new SlashCommandBuilder().setName("course")
+    .setDescription("Search for MTU courses")
+    .addStringOption(new SlashCommandStringOption().setName("subject")
+      .setDescription("The subject you want to look through courses for")
+      .setRequired(true))
+    .addStringOption(new SlashCommandStringOption().setName("year")
+      .setDescription("The year you want to look at courses from")
+      .setRequired(true))
+    .addStringOption(new SlashCommandStringOption().setName("semester")
+      .setDescription("The semester you want to look at courses from")
+      .setRequired(true))
+    .addStringOption(new SlashCommandStringOption().setName("name")
+      .setDescription("The name, or partial name, of the course you want to look for")
+      .setRequired(false))
+    .addStringOption(new SlashCommandStringOption().setName("number")
+      .setDescription("The number of the course you want to look for")
+      .setRequired(false))
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
