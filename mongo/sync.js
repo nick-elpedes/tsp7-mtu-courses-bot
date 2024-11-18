@@ -162,9 +162,45 @@ export async function createIndexes() {
   }
 }
 
+/* sync sections */
+export async function syncInstructors() {
+    const uri = process.env.MONGO_URI;
+    const client = new MongoClient("mongodb://localhost:27017");
+
+    try{
+        await client.connect();
+
+        const database = client.db("tsp7_mtu_courses_discord_db");
+        const instructors = database.collection("instructors");
+
+        const instructorsData = await fetch(
+            "https://api.michigantechcourses.com/instructors",
+            {
+              method: "GET",
+            }
+          );
+
+          const instructorsJSON = await instructorsData.json();
+          console.log(`Fetched ${instructorsJSON.length} courses from the API`);
+        
+          for (const instructor of instructorsJSON) {
+            await instructors.updateOne(
+              { id: instructor.id },
+              { $set: instructor },
+              { upsert: true }
+            );
+          }
+          console.log("Upserted instructors");
+    } finally {
+        await client.close();
+    }
+}
+
+
 // Run the sync function
 await syncCourses();
 await syncSections();
+await syncInstructors();
 await updateLastAccessed();
 await aggregateSections();
 await createIndexes();
