@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import { buildSemestersEmbed, buildCourseEmbed, buildBuildingsEmbed, buildSectionEmbed } from "./util/embed-builder.js";
+import { getCourses, getCourseData, getSections } from "./mongo/helper-commands.js";
 import dotenv from "dotenv";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -92,9 +93,11 @@ client.on("interactionCreate", async (interaction) => {
     let name = interaction.options.getString("name") ?? "";
     let num = interaction.options.getString("number") ?? "";
 
-    await findCourses(subject, year, semester, name, num);
+    //await findCourses(subject, year, semester, name, num);
+    let data = await getCourseData(year, semester, subject, name, num);
+    let embed = buildCourseEmbed(data);
 
-    interaction.editReply("done!");
+    interaction.editReply({embeds: [embed]});
   }
 });
 
