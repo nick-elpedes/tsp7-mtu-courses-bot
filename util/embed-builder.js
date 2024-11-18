@@ -91,6 +91,7 @@ export function buildBuildingsEmbed(json) {
  */
 export function buildCourseEmbed(json) {
   // make sure that the object provided is actually json
+
   if (!json || typeof json !== "object") {
     return { completed: false, error: "Invalid JSON object" };
   }
@@ -126,7 +127,7 @@ export function buildCourseEmbed(json) {
       },
       {
         name: "Pre-Requisites",
-        value: json.prereqs,
+        value: json.prereqs ?? "N/A",
         inline: false
       }
     )
