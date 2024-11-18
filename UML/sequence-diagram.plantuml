@@ -3,31 +3,47 @@ Actor User as usr
 
 Participant Bot as bot
 Participant API as api
+Participant MongoDB as mdb
+
+bot -> api: Request Updated Information
+activate bot
+api -> bot: Return Info
+bot -> mdb: Update Database with Most Recent Data
+deactivate bot
 
 usr -> bot: Get Class Information
 activate bot
-bot -> api: Fetch Class Information
-activate api
-api -> bot: Return Info
-deactivate api
+bot -> mdb: Fetch Class Information
+activate mdb
+mdb-> bot: Return Info
+deactivate mdb
 bot -> usr: Display Class Information
 deactivate bot
 
 usr -> bot: Get Class Sections
 activate bot
-bot -> api: Fetch Class Sections
-activate api
-api -> bot: Return Info
-deactivate api
+bot -> mdb: Fetch Class Sections
+activate mdb
+mdb -> bot: Return Info
+deactivate mdb
 bot -> usr: Display Class Sections
 deactivate bot
 
 usr -> bot: Get Class Statistics
 activate bot
-bot -> api: Fetch Class Pass and Fail
-activate api
-api -> bot: Return Info
-deactivate api
+bot -> mdb: Fetch Class Pass and Fail
+activate mdb
+mdb-> bot: Return Info
+deactivate mdb
 bot -> usr: Display Class Statistics
+deactivate bot
+
+usr -> bot: Get Building Information
+activate bot
+bot -> api: Fetch Building Information
+activate api
+api-> bot: Return Info
+deactivate api
+bot -> usr: Display Buildings
 deactivate bot
 @enduml
