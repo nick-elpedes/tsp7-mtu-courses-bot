@@ -114,6 +114,6 @@ export async function syncInstructors() {
 
 
 // Run the sync function
-//await syncCourses();
-//await syncSections();
+await syncCourses();
+await syncSections();
 await syncInstructors();
