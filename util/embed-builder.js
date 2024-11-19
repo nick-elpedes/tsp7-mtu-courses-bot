@@ -27,17 +27,21 @@ export function buildSemestersEmbed(json) {
     seasons[season].sort();
   }
 
-    return embed = new EmbedBuilder()
+  return new EmbedBuilder()
     .setTitle("Available Semesters")
     .addFields(
       {
         name: "Spring",
-        value: `${seasons.SPRING[0]}-${seasons.SPRING[seasons.SPRING.length - 1]}`,
+        value: `${seasons.SPRING[0]}-${
+          seasons.SPRING[seasons.SPRING.length - 1]
+        }`,
         inline: false,
       },
       {
         name: "Summer",
-        value: `${seasons.SUMMER[0]}-${seasons.SUMMER[seasons.SUMMER.length - 1]}`,
+        value: `${seasons.SUMMER[0]}-${
+          seasons.SUMMER[seasons.SUMMER.length - 1]
+        }`,
         inline: false,
       },
       {
@@ -50,38 +54,34 @@ export function buildSemestersEmbed(json) {
     .setFooter({
       text: "Retrieved from MTU Courses",
     })
-    .setTimestamp();   
+    .setTimestamp();
 }
 
-
 export function buildBuildingsEmbed(json) {
-    // make sure that the object provided is actually json
-    if (!json || typeof json !== "object") {
-        return { completed: false, error: "Invalid JSON object" };
-    }
-    console.log(json);
-    
-    const embed = new EmbedBuilder()
-    .setTitle(`Buildings`);
+  // make sure that the object provided is actually json
+  if (!json || typeof json !== "object") {
+    return { completed: false, error: "Invalid JSON object" };
+  }
+  console.log(json);
 
-    for(const building of json) {
-        embed.addFields(
-            {
-            name: `${building.name} (${building.shortName})`,
-            value: `Lat: ${building.lat}, Long: ${building.lon}`,
-            inline: false
-            }
-        );
-    }
+  const embed = new EmbedBuilder().setTitle(`Buildings`);
 
-    embed
+  for (const building of json) {
+    embed.addFields({
+      name: `${building.name} (${building.shortName})`,
+      value: `Lat: ${building.lat}, Long: ${building.lon}`,
+      inline: false,
+    });
+  }
+
+  embed
     .setColor("#ffea00")
     .setFooter({
       text: "Retrieved from MTU Courses",
     })
-    .setTimestamp(); 
-    
-    return embed;
+    .setTimestamp();
+
+  return embed;
 }
 
 /**
@@ -99,7 +99,7 @@ export function buildCourseEmbed(json) {
   let formatOffer = "";
   let offered = json.offered;
   for (var whence of offered) {
-    formatOffer += whence + ", "
+    formatOffer += whence + ", ";
   }
   formatOffer = formatOffer.substring(0, formatOffer.length - 2); // cut off the extra ", " i added
 
@@ -118,17 +118,17 @@ export function buildCourseEmbed(json) {
       {
         name: "Offered",
         value: formatOffer,
-        inline: false
+        inline: false,
       },
       {
         name: "Credits",
         value: formatCredits,
-        inline: false
+        inline: false,
       },
       {
         name: "Pre-Requisites",
         value: json.prereqs ?? "N/A",
-        inline: false
+        inline: false,
       }
     )
     .setColor("#ffea00")
@@ -139,7 +139,7 @@ export function buildCourseEmbed(json) {
 }
 
 /**
- * Builds an embed for a course object from /courses or /courses/first
+ * Builds an embed for a section object from /sections or /sections/first
  * @param {Object} json - The JSON response from the API
  * @returns {EmbedBuilder} - The completed embed
  */
@@ -150,8 +150,15 @@ export function buildSectionEmbed(json) {
   }
 
   return new EmbedBuilder()
-    .setTitle(`nyi`)
-    .setDescription(`nyi`)
+    .setTitle(`Not Yet Implemented`)
+    .setDescription(`Not Yet Implemented`)
+    .addFields([
+      {
+        name: "response",
+        inline: false,
+        value: JSON.stringify(json.time).substring(0, 1024),
+      },
+    ])
     .setColor("#ffea00")
     .setFooter({
       text: "Retrieved from MTU Courses",
