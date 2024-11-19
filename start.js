@@ -1,6 +1,15 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import { buildSemestersEmbed, buildCourseEmbed, buildBuildingsEmbed, buildSectionEmbed } from "./util/embed-builder.js";
-import { getCourses, getCourseData, getSections } from "./mongo/helper-commands.js";
+import {
+  buildSemestersEmbed,
+  buildCourseEmbed,
+  buildBuildingsEmbed,
+  buildSectionEmbed,
+} from "./util/embed-builder.js";
+import {
+  getCourses,
+  getCourseData,
+  getSections,
+} from "./mongo/helper-commands.js";
 import dotenv from "dotenv";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -47,7 +56,8 @@ client.on("interactionCreate", async (interaction) => {
     // Format arguments into API readable format
     let args = ""; // op between API args     // arg
     if (year != "") args += (args == "" ? "?" : "&") + `year=${year}`;
-    if (semester != "") args += (args == "" ? "?" : "&") + `semester=${semester}`;
+    if (semester != "")
+      args += (args == "" ? "?" : "&") + `semester=${semester}`;
     if (course != "") args += (args == "" ? "?" : "&") + `crse=${course}`;
     if (subject != "") args += (args == "" ? "?" : "&") + `subject=${subject}`;
 
@@ -65,7 +75,7 @@ client.on("interactionCreate", async (interaction) => {
     await interaction.editReply({ embeds: [embed] });
   } else if (interaction.commandName === "getsection") {
     await interaction.deferReply();
-    
+
     // Get arguments
     let year = interaction.options.getString("year") ?? "";
     let crn = interaction.options.getString("crn") ?? "";
@@ -75,7 +85,8 @@ client.on("interactionCreate", async (interaction) => {
     let args = ""; // op between API args     // arg
     if (year != "") args += (args == "" ? "?" : "&") + `year=${year}`;
     if (crn != "") args += (args == "" ? "?" : "&") + `crn=${crn}`;
-    if (semester != "") args += (args == "" ? "?" : "&") + `semester=${semester}`;
+    if (semester != "")
+      args += (args == "" ? "?" : "&") + `semester=${semester}`;
 
     // Get API data and turn it into an embed
     const sectionData = await fetch(
@@ -85,13 +96,12 @@ client.on("interactionCreate", async (interaction) => {
       }
     );
 
-
     const data = await sectionData.json();
     const embed = buildSectionEmbed(data);
 
     // Display embed
-    await interaction.editReply({ embeds: [embed]});
-  } else if (interaction.commandName == "course") {
+    await interaction.editReply({ embeds: [embed] });
+  } else if (interaction.commandName == "findcourses") {
     await interaction.deferReply();
 
     // Get args
@@ -105,7 +115,7 @@ client.on("interactionCreate", async (interaction) => {
     let data = await getCourseData(year, semester, subject, name, num);
     let embed = buildCourseEmbed(data);
 
-    interaction.editReply({embeds: [embed]});
+    interaction.editReply({ embeds: [embed] });
   }
 });
 

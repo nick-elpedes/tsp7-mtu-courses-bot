@@ -20,7 +20,10 @@ export async function getCourses(year, semester, subject) {
     const courseSections = database.collection("course_sections");
 
     const courseData = await courseSections
-      .find({ year: parseInt(year), semester, subject }, { sort: [["crse", 1]] })
+      .find(
+        { year: parseInt(year), semester, subject },
+        { sort: [["crse", 1]] }
+      )
       .toArray();
     const titles = courseData.map(
       (course) => `${course.subject}${course.crse} - ${course.title}`
@@ -63,7 +66,6 @@ export async function getCourseData(yr, sem, subj, name, num) {
     // get Cursor for specified arguments
     const result = await courses.findOne(query);
     return result;
-
   } finally {
     await client.close();
   }
@@ -93,8 +95,10 @@ export async function getSections(year, semester, subject, crse) {
       crse,
       sectionData: [],
     };
-    const sectionData = await courseSections
-      .findOne({ year: parseInt(year), semester, subject, crse }, { sort: [["crse", 1]] });
+    const sectionData = await courseSections.findOne(
+      { year: parseInt(year), semester, subject, crse },
+      { sort: [["crse", 1]] }
+    );
     returnData.sectionData = sectionData.sections;
     return returnData;
   } finally {
@@ -105,6 +109,7 @@ export async function getSections(year, semester, subject, crse) {
 // i am lazy :)
 function dbRegex(txt) {
   return {
-    $regex: `${txt}`, $options: 'i'
-  }
+    $regex: `${txt}`,
+    $options: "i",
+  };
 }

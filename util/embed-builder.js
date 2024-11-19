@@ -150,7 +150,12 @@ export function buildSectionEmbed(json) {
   }
 
   var days = "";
-  if (json.time.rrules != null && json.time.rrules.length > 0 && json.time.rrules[0].config.byDayOfWeek != null && json.time.rrules[0].config.byDayOfWeek.length > 0) {
+  if (
+    json.time.rrules != null &&
+    json.time.rrules.length > 0 &&
+    json.time.rrules[0].config.byDayOfWeek != null &&
+    json.time.rrules[0].config.byDayOfWeek.length > 0
+  ) {
     for (var whence of json.time.rrules[0].config.byDayOfWeek) {
       switch (whence) {
         case "MO":
@@ -158,7 +163,7 @@ export function buildSectionEmbed(json) {
           break;
         case "TU":
           days += "Tuesday";
-         break;
+          break;
         case "WE":
           days += "Wednesday";
           break;
@@ -169,7 +174,7 @@ export function buildSectionEmbed(json) {
           days += "Friday";
           break;
         default:
-          days += "?"
+          days += "?";
           break;
       }
       days += ", ";
@@ -178,34 +183,34 @@ export function buildSectionEmbed(json) {
 
   // Finish formatting days
   if (days == "") {
-    days = "None"
+    days = "None";
   } else {
     days = days.substring(0, days.length - 2);
   }
 
   return new EmbedBuilder()
-    .setAuthor(
-      {
-        name: `${json.course.subject} ${json.course.crse}: ${json.section}`
-      }
-    )
+    .setAuthor({
+      name: `${json.course.subject} ${json.course.crse}: ${json.section}`,
+    })
     .setTitle(`${json.course.title}`)
     .setDescription(`${json.course.description}`)
     .setFields(
       {
         name: "Days",
         value: days,
-        inline: false
+        inline: false,
       },
       {
         name: "Location",
         value: `${json.buildingName} ${json.room}`,
-        inline: false
+        inline: false,
       },
       {
         name: "Seats",
-        value: `${json.totalSeats} Total\n${json.totalSeats - json.takenSeats} Left`,
-        inline: false
+        value: `${json.totalSeats} Total\n${
+          json.totalSeats - json.takenSeats
+        } Left`,
+        inline: false,
       }
     )
     .setColor("#ffea00")
