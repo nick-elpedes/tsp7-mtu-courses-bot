@@ -9,7 +9,7 @@ dotenv.config(".env");
  * @param {"SPRING"|"FALL"|"SUMMER"} semester - The semester the course is offered.
  * @param {string} subject - The subject of the course. (MUST BE UPPERCASE)
  */
-export async function getCourses(year, semester, subject) {
+export async function getCourses(year, semester, subject, name, num) {
   const uri = process.env.MONGO_URI;
   const client = new MongoClient("mongodb://localhost:27017");
 
@@ -19,8 +19,17 @@ export async function getCourses(year, semester, subject) {
     const database = client.db("tsp7_mtu_courses_discord_db");
     const courseSections = database.collection("course_sections");
 
+    // setup the query with the required and optional args given
+    let query = {
+      "year": parseInt(year),
+      "semester": semester,
+      "subject": subject
+    }
+    if (name != "") query["title"] = dbRegex(name);
+    if (num != "") query["crse"] = num;
+
     const courseData = await courseSections
-      .find({ year: parseInt(year), semester, subject }, { sort: [["crse", 1]] })
+      .find(query, { sort: [["crse", 1]] })
       .toArray();
     const titles = courseData.map(
       (course) => `${course.subject}${course.crse} - ${course.title}`
@@ -39,7 +48,7 @@ export async function getCourses(year, semester, subject) {
  * @param {string} name - The name, or part of the name, of the course.
  * @param {string} num - The course number.
  */
-export async function getCourseData(yr, sem, subj, name, num) {
+export async function getCourseData(year, semester, subject, name, num) {
   // MongoDB URI is stored in the environment variable MONGO_URI
   const uri = process.env.MONGO_URI;
   // Create the MongoDB client
@@ -53,10 +62,11 @@ export async function getCourseData(yr, sem, subj, name, num) {
     const courses = database.collection("courses");
 
     // format argument data into DB readable format
-    let query = {};
-    if (subj != "") query["subject"] = subj;
-    if (yr != "") query["year"] = parseInt(yr);
-    if (sem != "") query["semester"] = sem;
+    let query = {
+      "year": parseInt(year),
+      "semester": semester,
+      "subject": subject
+    }
     if (name != "") query["title"] = dbRegex(name);
     if (num != "") query["crse"] = num;
 
