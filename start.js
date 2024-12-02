@@ -86,7 +86,6 @@ client.on("interactionCreate", async (interaction) => {
 
     // Get all matching courses
     let courseNames = await getCourses(year, semester, subject, name, num);
-    console.log(courseNames);
     let embed = null;
     if (courseNames.length == 1) {
       // only one course matched, display more detailed information instead
