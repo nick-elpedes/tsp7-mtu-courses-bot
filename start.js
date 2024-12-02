@@ -1,6 +1,16 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import { buildSemestersEmbed, buildCoursesEmbed, buildCourseDataEmbed, buildBuildingsEmbed, buildSectionEmbed } from "./util/embed-builder.js";
-import { getCourses, getCourseData, getSections } from "./mongo/helper-commands.js";
+import {
+  buildSemestersEmbed,
+  buildCoursesEmbed,
+  buildCourseDataEmbed,
+  buildBuildingsEmbed,
+  buildSectionEmbed,
+} from "./util/embed-builder.js";
+import {
+  getCourses,
+  getCourseData,
+  getSections,
+} from "./mongo/helper-commands.js";
 import dotenv from "dotenv";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -15,32 +25,39 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === "ping") {
     await interaction.reply("Pong!");
-  } else if (interaction.commandName === "semesters") { // this is where the bot accesses all the get API calls from mtu courses
-    const semesters = await fetch("https://api.michigantechcourses.com/semesters", {
-      method: "GET",
-    });
+  } else if (interaction.commandName === "semesters") {
+    // this is where the bot accesses all the get API calls from mtu courses
+    const semesters = await fetch(
+      "https://api.michigantechcourses.com/semesters",
+      {
+        method: "GET",
+      }
+    );
     const embed = buildSemestersEmbed(await semesters.json());
 
     await interaction.reply({ embeds: [embed] });
-  } else if (interaction.commandName === "buildings") { 
-    const buildings = await fetch("https://api.michigantechcourses.com/buildings", {
-      method: "GET",
-    });
+  } else if (interaction.commandName === "buildings") {
+    const buildings = await fetch(
+      "https://api.michigantechcourses.com/buildings",
+      {
+        method: "GET",
+      }
+    );
     const embed = buildBuildingsEmbed(await buildings.json());
 
     await interaction.reply({ embeds: [embed] });
-  } else if (interaction.commandName === "testsectionsfirst") {
+  } else if (interaction.commandName === "getsection") {
     await interaction.deferReply();
-    
+
     // Get arguments
     let year = interaction.options.getString("year") ?? "";
+    let crn = interaction.options.getString("crn") ?? "";
     let semester = interaction.options.getString("semester") ?? "";
-    let crn = interaction.options.getString("coursenum") ?? "";
 
     // Format arguments into API readable format
     let args = ""; // op between API args     // arg
-    if (crn != "") args += (args == "" ? "?" : "&") + `crn=${crn}`;
     if (year != "") args += (args == "" ? "?" : "&") + `year=${year}`;
+    if (crn != "") args += (args == "" ? "?" : "&") + `crn=${crn}`;
     if (semester != "")
       args += (args == "" ? "?" : "&") + `semester=${semester}`;
 
@@ -51,11 +68,12 @@ client.on("interactionCreate", async (interaction) => {
         method: "GET",
       }
     );
+
     const data = await sectionData.json();
     const embed = buildSectionEmbed(data);
 
     // Display embed
-    await interaction.editReply({ embeds: [embed]});
+    await interaction.editReply({ embeds: [embed] });
   } else if (interaction.commandName == "course") {
     await interaction.deferReply();
 
@@ -79,7 +97,7 @@ client.on("interactionCreate", async (interaction) => {
     }
     
 
-    interaction.editReply({embeds: [embed]});
+    interaction.editReply({ embeds: [embed] });
   }
 });
 
