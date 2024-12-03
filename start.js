@@ -4,11 +4,14 @@ import {
   buildCourseEmbed,
   buildBuildingsEmbed,
   buildSectionEmbed,
+  buildInstructorsEmbed,
+  build404Embed,
 } from "./util/embed-builder.js";
 import {
   getCourses,
   getCourseData,
   getSections,
+  findInstructor,
 } from "./mongo/helper-commands.js";
 import dotenv from "dotenv";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -114,6 +117,23 @@ client.on("interactionCreate", async (interaction) => {
     //await findCourses(subject, year, semester, name, num);
     let data = await getCourseData(year, semester, subject, name, num);
     let embed = buildCourseEmbed(data);
+
+    interaction.editReply({ embeds: [embed] });
+  } else if (interaction.commandName == "findinstructor") {
+    await interaction.deferReply();
+
+    // Get args
+    let name = interaction.options.getString("name") ?? "";
+
+    //await findInstructor(name);
+    let data = await findInstructor(name);
+
+    let embed;
+    if (!data) {
+      embed = build404Embed();
+    } else {
+      embed = buildInstructorsEmbed(data);
+    }
 
     interaction.editReply({ embeds: [embed] });
   }

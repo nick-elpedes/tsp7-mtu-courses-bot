@@ -29,6 +29,8 @@ export async function getCourses(year, semester, subject) {
       (course) => `${course.subject}${course.crse} - ${course.title}`
     );
     return titles;
+  } catch (error) {
+    console.error(error);
   } finally {
     await client.close();
   }
@@ -106,10 +108,34 @@ export async function getSections(year, semester, subject, crse) {
   }
 }
 
+/**
+ * Find an instructor by name.
+ * @param {string} name - The name of the instructor.
+ */
+export async function findInstructor(name) {
+  const uri = process.env.MONGO_URI;
+  const client = new MongoClient("mongodb://localhost:27017");
+
+  try {
+    await client.connect();
+
+    const database = client.db("tsp7_mtu_courses_discord_db");
+    const instructors = database.collection("instructors");
+
+    const query = { fullName: dbRegex(name) };
+
+    
+    const instructor = await instructors.findOne(query);
+    return instructor;
+  } finally {
+    await client.close();
+  }
+}
+
 // i am lazy :)
 function dbRegex(txt) {
   return {
-    $regex: `${txt}`,
+    $regex: new RegExp(txt),
     $options: "i",
   };
 }

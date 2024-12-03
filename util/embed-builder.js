@@ -219,3 +219,41 @@ export function buildSectionEmbed(json) {
     })
     .setTimestamp();
 }
+
+export function buildInstructorsEmbed(json) {
+  // make sure that the object provided is actually json
+  if (!json || typeof json !== "object") {
+    return { completed: false, error: "Invalid JSON object" };
+  }
+
+  console.log(json);
+  const embed = new EmbedBuilder()
+    .setTitle(`Instructor`)
+    .setDescription(`Instructor`)
+    .addFields({
+      name: `${json?.fullName}`,
+      value: `${json?.email}`,
+      inline: false,
+    })
+    .setColor("#ffea00")
+    .setFooter({
+      text: "Retrieved from MTU Courses",
+    })
+    .setTimestamp();
+
+  return embed;
+}
+
+/**
+ * Build 404 error embed
+ */
+export function build404Embed() {
+  return new EmbedBuilder()
+    .setTitle("Not Found")
+    .setDescription("That combination of parameters didn't find anything.")
+    .setColor("#ff0000")
+    .setFooter({
+      text: "NOT Retrieved from MTU Courses. Can't find it, there's only soup.",
+    })
+    .setTimestamp();
+}

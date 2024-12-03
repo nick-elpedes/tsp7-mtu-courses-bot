@@ -110,6 +110,15 @@ const commands = [
         .setDescription("The number of the course you want to look for")
         .setRequired(false)
     ),
+  new SlashCommandBuilder()
+    .setName("findinstructor")
+    .setDescription("Search for MTU instructors by name")
+    .addStringOption(
+      new SlashCommandStringOption()
+        .setName("name")
+        .setDescription("The name, or partial name, of the instructor you want to look for")
+        .setRequired(true)
+    ),
 ];
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
