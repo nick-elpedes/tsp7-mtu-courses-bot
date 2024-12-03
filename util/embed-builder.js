@@ -85,11 +85,11 @@ export function buildBuildingsEmbed(json) {
 }
 
 /**
- * Builds an embed for a course object from /courses or /courses/first
+ * Builds an embed for a single course from /course
  * @param {Object} json - The JSON response from the API
  * @returns {EmbedBuilder} - The completed embed
  */
-export function buildCourseEmbed(json) {
+export function buildCourseDataEmbed(json) {
   // make sure that the object provided is actually json
 
   if (!json || typeof json !== "object") {
@@ -136,6 +136,33 @@ export function buildCourseEmbed(json) {
       text: "Retrieved from MTU Courses",
     })
     .setTimestamp();
+}
+
+/**
+ * Builds an embed for multiple course from /course
+ * @param {Object} json - The JSON response from the API
+ * @returns {EmbedBuilder} - The completed embed
+ */
+export function buildCoursesEmbed(json) {
+  // make sure that the object provided is actually json
+  if (!json || typeof json !== "object") {
+    return { completed: false, error: "Invalid JSON object" };
+  }
+
+  let courseList = "";
+  for (let i = 0; i < json.length; i++) {
+    courseList += json[i];
+    if (i + 1 < json.length) courseList += "\n"; // spacing if there is another element
+  }
+
+  return new EmbedBuilder()
+  .setTitle(`Matched Courses:`)
+  .setDescription(courseList)
+  .setColor("#ffea00")
+  .setFooter({
+    text: "Retrieved from MTU Courses",
+  })
+  .setTimestamp();
 }
 
 /**

@@ -1,7 +1,8 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import {
   buildSemestersEmbed,
-  buildCourseEmbed,
+  buildCoursesEmbed,
+  buildCourseDataEmbed,
   buildBuildingsEmbed,
   buildSectionEmbed,
   buildInstructorsEmbed,
@@ -48,34 +49,6 @@ client.on("interactionCreate", async (interaction) => {
     const embed = buildBuildingsEmbed(await buildings.json());
 
     await interaction.reply({ embeds: [embed] });
-  } else if (interaction.commandName === "getcourse") {
-    await interaction.deferReply();
-    // Get arguments
-    let year = interaction.options.getString("year") ?? "";
-    let semester = interaction.options.getString("semester") ?? "";
-    let course = interaction.options.getString("course") ?? "";
-    let subject = interaction.options.getString("subject") ?? "";
-
-    // Format arguments into API readable format
-    let args = ""; // op between API args     // arg
-    if (year != "") args += (args == "" ? "?" : "&") + `year=${year}`;
-    if (semester != "")
-      args += (args == "" ? "?" : "&") + `semester=${semester}`;
-    if (course != "") args += (args == "" ? "?" : "&") + `crse=${course}`;
-    if (subject != "") args += (args == "" ? "?" : "&") + `subject=${subject}`;
-
-    // Get API data and turn it into an embed
-    const courseData = await fetch(
-      `https://api.michigantechcourses.com/courses/first${args}`,
-      {
-        method: "GET",
-      }
-    );
-    const data = await courseData.json();
-    const embed = buildCourseEmbed(data);
-
-    // Display embed
-    await interaction.editReply({ embeds: [embed] });
   } else if (interaction.commandName === "getsection") {
     await interaction.deferReply();
 
@@ -104,7 +77,7 @@ client.on("interactionCreate", async (interaction) => {
 
     // Display embed
     await interaction.editReply({ embeds: [embed] });
-  } else if (interaction.commandName == "findcourses") {
+  } else if (interaction.commandName == "course") {
     await interaction.deferReply();
 
     // Get args
@@ -114,9 +87,17 @@ client.on("interactionCreate", async (interaction) => {
     let name = interaction.options.getString("name") ?? "";
     let num = interaction.options.getString("number") ?? "";
 
-    //await findCourses(subject, year, semester, name, num);
-    let data = await getCourseData(year, semester, subject, name, num);
-    let embed = buildCourseEmbed(data);
+    // Get all matching courses
+    let courseNames = await getCourses(year, semester, subject, name, num);
+    let embed = null;
+    if (courseNames.length == 1) {
+      // only one course matched, display more detailed information instead
+      let courseData = await getCourseData(year, semester, subject, name, num);
+      embed = buildCourseDataEmbed(courseData);
+    } else {
+      embed = buildCoursesEmbed(courseNames);
+    }
+    
 
     interaction.editReply({ embeds: [embed] });
   } else if (interaction.commandName == "findinstructor") {
