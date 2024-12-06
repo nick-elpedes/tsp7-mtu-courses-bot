@@ -90,14 +90,15 @@ client.on("interactionCreate", async (interaction) => {
     // Get all matching courses
     let courseNames = await getCourses(year, semester, subject, name, num);
     let embed = null;
-    if (courseNames.length == 1) {
+    if (courseNames.length == 0) {
+      embed = build404Embed();
+    } else if (courseNames.length == 1) {
       // only one course matched, display more detailed information instead
       let courseData = await getCourseData(year, semester, subject, name, num);
       embed = buildCourseDataEmbed(courseData);
     } else {
       embed = buildCoursesEmbed(courseNames);
     }
-    
 
     interaction.editReply({ embeds: [embed] });
   } else if (interaction.commandName == "findinstructor") {
