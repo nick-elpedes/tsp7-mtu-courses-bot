@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import { formatSectionList } from "../mongo/helper-commands.js";
 
 /**
  * Builds an embed for the semesters command
@@ -62,7 +63,6 @@ export function buildBuildingsEmbed(json) {
   if (!json || typeof json !== "object") {
     return { completed: false, error: "Invalid JSON object" };
   }
-  console.log(json);
 
   const embed = new EmbedBuilder().setTitle(`Buildings`);
 
@@ -91,7 +91,6 @@ export function buildBuildingsEmbed(json) {
  */
 export function buildCourseDataEmbed(json) {
   // make sure that the object provided is actually json
-
   if (!json || typeof json !== "object") {
     return { completed: false, error: "Invalid JSON object" };
   }
@@ -108,34 +107,56 @@ export function buildCourseDataEmbed(json) {
     formatCredits += ` - ${json.maxCredits}`;
   }
 
-  return new EmbedBuilder()
-    .setAuthor({
+  // create section list
+  let sectionList = "";
+  if (json.sections && json.sections.length >= 0) {
+    const sections = formatSectionList(json.sections);
+    for (const section of sections) {
+      sectionList += `${section}\n`;
+    }
+  } else {
+    sectionList = "No sections found";
+  }
+
+  let embed = new EmbedBuilder();
+  try {
+    embed.setAuthor({
       name: `${json.subject} ${json.crse}`,
-    })
-    .setTitle(`${json.title}`)
-    .setDescription(`${json.description}`)
-    .addFields(
+    });
+    embed.setTitle(`${json.title ?? "Unknown"}`);
+    embed.setDescription(`${json.description ?? "Unknown"}`);
+    embed.setFields(
       {
         name: "Offered",
-        value: formatOffer,
+        value: (formatOffer && formatOffer.length != 0) ? formatOffer : "Unknown; See MTU Courses/Banweb",
         inline: false,
       },
       {
         name: "Credits",
-        value: formatCredits,
-        inline: false,
+        value: formatCredits ?? "N/A",
+        inline: true,
       },
       {
         name: "Pre-Requisites",
         value: json.prereqs ?? "N/A",
+        inline: true,
+      },
+      {
+        name: "Sections",
+        value: sectionList.substring(0, 1024), // needs to be fixed or section data will be cut off.
         inline: false,
       }
-    )
-    .setColor("#ffea00")
-    .setFooter({
+    );
+    embed.setColor("#ffea00");
+    embed.setFooter({
       text: "Retrieved from MTU Courses",
-    })
-    .setTimestamp();
+    });
+    embed.setTimestamp();
+    return embed;
+  } catch (error) {
+   // console.error(error);
+    return build404Embed();
+  }
 }
 
 /**
@@ -156,13 +177,13 @@ export function buildCoursesEmbed(json) {
   }
 
   return new EmbedBuilder()
-  .setTitle(`Matched Courses:`)
-  .setDescription(courseList)
-  .setColor("#ffea00")
-  .setFooter({
-    text: "Retrieved from MTU Courses",
-  })
-  .setTimestamp();
+    .setTitle(`Matched Courses:`)
+    .setDescription(courseList)
+    .setColor("#ffea00")
+    .setFooter({
+      text: "Retrieved from MTU Courses",
+    })
+    .setTimestamp();
 }
 
 /**
@@ -253,7 +274,6 @@ export function buildInstructorsEmbed(json) {
     return { completed: false, error: "Invalid JSON object" };
   }
 
-  console.log(json);
   const embed = new EmbedBuilder()
     .setTitle(`Instructor`)
     .setDescription(`Instructor`)
@@ -276,8 +296,8 @@ export function buildInstructorsEmbed(json) {
  */
 export function build404Embed() {
   return new EmbedBuilder()
-    .setTitle("Not Found")
-    .setDescription("That combination of parameters didn't find anything.")
+    .setTitle("Not Found, or Error")
+    .setDescription("That combination of parameters didn't find anything, or there was an error.")
     .setColor("#ff0000")
     .setFooter({
       text: "NOT Retrieved from MTU Courses. Can't find it, there's only soup.",

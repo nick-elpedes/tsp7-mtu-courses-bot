@@ -95,7 +95,14 @@ client.on("interactionCreate", async (interaction) => {
     } else if (courseNames.length == 1) {
       // only one course matched, display more detailed information instead
       let courseData = await getCourseData(year, semester, subject, name, num);
-      embed = buildCourseDataEmbed(courseData);
+
+
+      try {
+        embed = buildCourseDataEmbed(courseData);
+      } catch (error) {
+        console.log(JSON.stringify(courseData));
+        console.error(JSON.stringify(error));
+      }
     } else {
       embed = buildCoursesEmbed(courseNames);
     }
