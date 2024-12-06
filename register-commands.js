@@ -22,36 +22,6 @@ const commands = [
     description: "Returns a list of buildings along with their coordinates",
   },
   new SlashCommandBuilder()
-    .setName("getcourse")
-    .setDescription(
-      "Get the first course from the MTU Courses API that matches the input parameters"
-    )
-    .addStringOption(
-      new SlashCommandStringOption()
-        .setName("year")
-        .setDescription("The year to limit courses responses to")
-        .setRequired(true)
-    )
-    .addStringOption(
-      new SlashCommandStringOption()
-        .setName("semester")
-        .setDescription("The semester to limit courses responses to")
-        .setRequired(true)
-    )
-    .addStringOption(
-      new SlashCommandStringOption()
-        .setName("course")
-        .setDescription("The course to limit courses responses to")
-        .setRequired(true)
-    )
-    .addStringOption(
-      new SlashCommandStringOption()
-        .setName("subject")
-        .setDescription("The subject to limit courses responses to")
-        .setRequired(true)
-    )
-    .toJSON(),
-  new SlashCommandBuilder()
     .setName("getsection")
     .setDescription(
       "Get the first section from the MTU Courses API that matches the input parameters"
@@ -76,7 +46,7 @@ const commands = [
     )
     .toJSON(),
   new SlashCommandBuilder()
-    .setName("findcourses")
+    .setName("course")
     .setDescription("Search for MTU courses that match the input parameters")
     .addStringOption(
       new SlashCommandStringOption()
