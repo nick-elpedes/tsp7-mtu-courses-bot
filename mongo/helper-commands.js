@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+import escapeStringRegexp from "escape-string-regexp";
 
 dotenv.config(".env");
 
@@ -290,7 +291,7 @@ export async function findInstructor(name) {
 // i am lazy :)
 function dbRegex(txt) {
   return {
-    $regex: new RegExp(txt),
+    $regex: new RegExp(escapeStringRegexp(txt)),
     $options: "i",
   };
 }

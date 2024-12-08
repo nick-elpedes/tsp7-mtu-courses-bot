@@ -153,7 +153,7 @@ client.on("interactionCreate", async (interaction) => {
       embed = build404Embed();
     }
     interaction.editReply({ embeds: [embed] });
-  } else if (interaction.commandName == "findinstructor") {
+  } else if (interaction.commandName == "instructor") {
     await interaction.deferReply();
 
     // Get args
