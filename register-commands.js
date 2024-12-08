@@ -12,14 +12,17 @@ const commands = [
   {
     name: "ping",
     description: "Replies with Pong!",
+    contexts: [0,1,2],
   },
   {
     name: "semesters",
     description: "Returns a list of semesters supported by the MTU Courses API",
+    contexts: [0,1,2],
   },
   {
     name: "buildings",
     description: "Returns a list of buildings along with their coordinates",
+    contexts: [0,1,2],
   },
   // new SlashCommandBuilder()
   //   .setName("getsection")
@@ -52,7 +55,8 @@ const commands = [
     .addStringOption( simpleStringOption("year", "The year you want to look at courses from", true))
     .addStringOption( simpleStringOption("semester", "The semester you want to look at courses from", true))
     .addStringOption( simpleStringOption("name", "The name, or partial name, of the course you want to look for", false))
-    .addStringOption( simpleStringOption("number", "The number of the course you want to look for", false)),
+    .addStringOption( simpleStringOption("number", "The number of the course you want to look for", false))
+    .setContexts([0,1,2]),
   new SlashCommandBuilder()
     .setName("section")
     .setDescription("Search for sections from a specific class")
@@ -60,11 +64,13 @@ const commands = [
     .addStringOption( simpleStringOption("year", "The year you want to look at sections from", true))
     .addStringOption( simpleStringOption("semester", "The semester you want to look at sections from", true))
     .addStringOption( simpleStringOption("coursenumber", "The number of the course you want to look at sections for", true))
-    .addStringOption( simpleStringOption("crn", "The crn of the section you want to look at", false)),
+    .addStringOption( simpleStringOption("crn", "The crn of the section you want to look at", false))
+    .setContexts([0,1,2]),
   new SlashCommandBuilder()
     .setName("findinstructor")
     .setDescription("Search for MTU instructors by name")
-    .addStringOption( simpleStringOption("name", "The name, or partial name, of the instructor you want to look for", true)),
+    .addStringOption( simpleStringOption("name", "The name, or partial name, of the instructor you want to look for", true))
+    .setContexts([0,1,2]),
 ];
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
