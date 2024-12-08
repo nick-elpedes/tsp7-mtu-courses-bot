@@ -199,7 +199,6 @@ export function buildCoursesEmbed(json) {
  * @returns {EmbedBuilder} - The completed embed
  */
 export function buildSectionsEmbed(json, subj, crse) {
-  console.log(json);
   // make sure that the object provided is actually json
   if (!json || typeof json !== "object") {
     return { completed: false, error: "Invalid JSON object" };
