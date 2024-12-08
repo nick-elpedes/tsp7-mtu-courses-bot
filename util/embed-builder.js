@@ -108,57 +108,20 @@ export function buildCourseDataEmbed(json) {
   }
 
   // create section lists
-  let sectionLists = [""];
+  let sectionList = "";
   if (json.sections && json.sections.length >= 0) {
     const sections = formatSectionList(json.sections);
-    let i = 0;
     let count = 0;
     for (const section of sections) {
       count += section.length + 1; // include the newline
-      if (count > 1024) {
-        // Move onto the next list
-        count = section.length + 1;
-        i++;
-        sectionLists[i] = ""; // cursed
+      if (count > 1024) { // too many sections
+        sectionList = `There are ${sections.length} sections, which is a few too many to display here.\nTo see the sections for this course, use the \`/section\` command`
+        break;
       }
-      sectionLists[i] += `${section}\n`;
+      sectionList += `${section}\n`;
     }
   } else {
-    sectionLists[0] = "No sections found";
-  }
-
-  // Setup default fields
-  let fields = [
-    {
-      name: "Offered",
-      value: (formatOffer && formatOffer.length != 0) ? formatOffer : "Unknown; See MTU Courses/Banweb",
-      inline: false,
-    },
-    {
-      name: "Credits",
-      value: formatCredits ?? "N/A",
-      inline: true,
-    },
-    {
-      name: "Pre-Requisites",
-      value: json.prereqs ?? "N/A",
-      inline: true,
-    },
-    {
-      name: "Sections",
-      value: sectionLists[0],
-      inline: false,
-    }
-  ];
-
-  // Add any extra section fields needed to display everything
-  for (let i = 1; i < sectionLists.length; i++) {
-    let extendSections = {
-      name: "\u200b", // 0-length (invisible) character
-      value: sectionLists[i],
-      inline: false
-    }
-    fields.push(extendSections);
+    sectionList = "No sections found";
   }
 
 
@@ -169,7 +132,28 @@ export function buildCourseDataEmbed(json) {
     });
     embed.setTitle(`${json.title ?? "Unknown"}`);
     embed.setDescription(`${json.description ?? "Unknown"}`);
-    embed.setFields(fields);
+    embed.setFields(
+      {
+        name: "Offered",
+        value: (formatOffer && formatOffer.length != 0) ? formatOffer : "Unknown; See MTU Courses/Banweb",
+        inline: false,
+      },
+      {
+        name: "Credits",
+        value: formatCredits ?? "N/A",
+        inline: true,
+      },
+      {
+        name: "Pre-Requisites",
+        value: json.prereqs ?? "N/A",
+        inline: true,
+      },
+      {
+        name: "Sections",
+        value: sectionList,
+        inline: false,
+      }
+    );
     embed.setColor("#ffea00");
     embed.setFooter({
       text: "Retrieved from MTU Courses",
@@ -210,11 +194,72 @@ export function buildCoursesEmbed(json) {
 }
 
 /**
- * Builds an embed for a section object from /sections or /sections/first
+ * Builds an embed for a list of sections
  * @param {Object} json - The JSON response from the API
  * @returns {EmbedBuilder} - The completed embed
  */
-export function buildSectionEmbed(json) {
+export function buildSectionsEmbed(json, subj, crse) {
+  console.log(json);
+  // make sure that the object provided is actually json
+  if (!json || typeof json !== "object") {
+    return { completed: false, error: "Invalid JSON object" };
+  }
+  
+  // create section lists
+  let sectionLists = [""];
+  if (json && json.length >= 0) {
+    const sections = formatSectionList(json);
+    let i = 0;
+    let count = 0;
+    for (const section of sections) {
+      count += section.length + 1; // include the newline
+      if (count > 1024) { // make a new section
+        count = section.length + 1;
+        i++;
+        sectionLists[i] = "";
+      }
+        sectionLists[i] += `${section}\n`;
+      }
+    } else {
+      sectionLists[0] = "No sections found";
+    }
+
+    // Create section fields
+    let fields = [];
+    for (let j = 0; j < sectionLists.length; j++) {
+      fields.push({
+        name: "\u2008",
+        value: sectionLists[j],
+        inline: false
+      })
+    }
+  
+  
+    let embed = new EmbedBuilder();
+    try {
+      embed.setTitle(`${subj} ${crse}`);
+      embed.setDescription("***Sections available for this course:***");
+      embed.setFields(fields);
+      embed.setColor("#ffea00");
+      embed.setFooter({
+        text: "Retrieved from MTU Courses",
+      });
+      embed.setTimestamp();
+      return embed;
+    } catch (error) {
+      console.error(error);
+      return build404Embed();
+    }
+}
+
+/**
+ * Builds an embed for a section object from /sections or /sections/first
+ * @param {Object} json - The JSON response from the API
+ * @param {String} subj - The subject these sections are from
+ * @param {String} crse - The specific course these sections are from
+ * @returns {EmbedBuilder} - The completed embed
+ */
+export function buildSectionDataEmbed(json, subj, crse) {
   // make sure that the object provided is actually json
   if (!json || typeof json !== "object") {
     return { completed: false, error: "Invalid JSON object" };
@@ -260,11 +305,8 @@ export function buildSectionEmbed(json) {
   }
 
   return new EmbedBuilder()
-    .setAuthor({
-      name: `${json.course.subject} ${json.course.crse}: ${json.section}`,
-    })
-    .setTitle(`${json.course.title}`)
-    .setDescription(`${json.course.description}`)
+    .setTitle(`${subj} ${crse}`)
+    .setDescription(`Section ${json.section} (${json.crn})`)
     .setFields(
       {
         name: "Days",
@@ -324,6 +366,21 @@ export function build404Embed() {
     .setColor("#ff0000")
     .setFooter({
       text: "NOT Retrieved from MTU Courses. Can't find it, there's only soup.",
+    })
+    .setTimestamp();
+}
+
+/**
+ * Builds an embed to let the user know their search was not specific enough
+ * @param {String} thing - the specific object that there are too many of
+ */
+export function buildNotSpecificEnoughEmbed(thing) {
+  return new EmbedBuilder()
+    .setTitle("Not Specific Enough")
+    .setDescription(`That combination of parameters found too many ${thing}, try limiting your search more.`)
+    .setColor("#ff0000")
+    .setFooter({
+      text: "NOT Retrieved from MTU Courses. Not enough soup.",
     })
     .setTimestamp();
 }

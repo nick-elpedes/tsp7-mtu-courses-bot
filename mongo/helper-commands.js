@@ -231,6 +231,40 @@ export async function getSections(year, semester, subject, crse) {
 }
 
 /**
+ * Get a single section by year, semester, and CRN number
+ * @param {string|number} year - The year the course is offered.
+ * @param {"SPRING"|"FALL"|"SUMMER"} semester - The semester the course is offered.
+ * @param {string|number} crn - the section's CRN number
+ */
+export async function getSectionData(year, semester, crn) {
+  const uri = process.env.MONGO_URI;
+  const client = new MongoClient("mongodb://localhost:27017");
+
+  try {
+    await client.connect();
+
+    const database = client.db("tsp7_mtu_courses_discord_db");
+    const courseSections = database.collection("course_sections");
+
+    const sectionData = await courseSections.findOne(
+      { year: parseInt(year), semester, subject, crse },
+      { sort: [["crse", 1]] }
+    );
+
+    // sort sections based on section identifier
+    sectionData.sections.sort((a, b) => {
+      if (a.section < b.section) return -1;
+      if (a.section > b.section) return 1;
+      return 0;
+    });
+
+    return sectionData.sections;
+  } finally {
+    await client.close();
+  }
+}
+
+/**
  * Find an instructor by name.
  * @param {string} name - The name of the instructor.
  */
