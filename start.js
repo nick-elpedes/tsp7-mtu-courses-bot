@@ -83,7 +83,7 @@ client.on("interactionCreate", async (interaction) => {
     // Get args
     let subject = interaction.options.getString("subject") ?? "";
     let year = interaction.options.getString("year") ?? "";
-    let semester = interaction.options.getString("semester") ?? "";
+    let semester = interaction.options.getString("semester").toUpperCase() ?? "";
     let name = interaction.options.getString("name") ?? "";
     let num = interaction.options.getString("number") ?? "";
 

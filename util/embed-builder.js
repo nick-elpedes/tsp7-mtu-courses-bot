@@ -107,16 +107,60 @@ export function buildCourseDataEmbed(json) {
     formatCredits += ` - ${json.maxCredits}`;
   }
 
-  // create section list
-  let sectionList = "";
+  // create section lists
+  let sectionLists = [""];
   if (json.sections && json.sections.length >= 0) {
     const sections = formatSectionList(json.sections);
+    let i = 0;
+    let count = 0;
     for (const section of sections) {
-      sectionList += `${section}\n`;
+      count += section.length + 1; // include the newline
+      if (count > 1024) {
+        // Move onto the next list
+        count = section.length + 1;
+        i++;
+        sectionLists[i] = ""; // cursed
+      }
+      sectionLists[i] += `${section}\n`;
     }
   } else {
-    sectionList = "No sections found";
+    sectionLists[0] = "No sections found";
   }
+
+  // Setup default fields
+  let fields = [
+    {
+      name: "Offered",
+      value: (formatOffer && formatOffer.length != 0) ? formatOffer : "Unknown; See MTU Courses/Banweb",
+      inline: false,
+    },
+    {
+      name: "Credits",
+      value: formatCredits ?? "N/A",
+      inline: true,
+    },
+    {
+      name: "Pre-Requisites",
+      value: json.prereqs ?? "N/A",
+      inline: true,
+    },
+    {
+      name: "Sections",
+      value: sectionLists[0],
+      inline: false,
+    }
+  ];
+
+  // Add any extra section fields needed to display everything
+  for (let i = 1; i < sectionLists.length; i++) {
+    let extendSections = {
+      name: "\u200b", // 0-length (invisible) character
+      value: sectionLists[i],
+      inline: false
+    }
+    fields.push(extendSections);
+  }
+
 
   let embed = new EmbedBuilder();
   try {
@@ -125,28 +169,7 @@ export function buildCourseDataEmbed(json) {
     });
     embed.setTitle(`${json.title ?? "Unknown"}`);
     embed.setDescription(`${json.description ?? "Unknown"}`);
-    embed.setFields(
-      {
-        name: "Offered",
-        value: (formatOffer && formatOffer.length != 0) ? formatOffer : "Unknown; See MTU Courses/Banweb",
-        inline: false,
-      },
-      {
-        name: "Credits",
-        value: formatCredits ?? "N/A",
-        inline: true,
-      },
-      {
-        name: "Pre-Requisites",
-        value: json.prereqs ?? "N/A",
-        inline: true,
-      },
-      {
-        name: "Sections",
-        value: sectionList.substring(0, 1024), // needs to be fixed or section data will be cut off.
-        inline: false,
-      }
-    );
+    embed.setFields(fields);
     embed.setColor("#ffea00");
     embed.setFooter({
       text: "Retrieved from MTU Courses",
@@ -154,7 +177,7 @@ export function buildCourseDataEmbed(json) {
     embed.setTimestamp();
     return embed;
   } catch (error) {
-   // console.error(error);
+    console.error(error);
     return build404Embed();
   }
 }
